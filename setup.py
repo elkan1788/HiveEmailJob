@@ -16,7 +16,7 @@ setup(
     description='Use Python implements get data from Hive then send attachments to user.',
     author='elkan1788',
     author_email='elkan1788@gmail.com',
-    license='MIT',
+    license='Apache License V2.0',
     install_requires=REQUIRES,
     packages=find_packages()
 )
