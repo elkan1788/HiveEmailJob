@@ -69,7 +69,7 @@ body=此邮件由系统自动发送，请勿回复，谢谢！
 Find out where you install this component folder. Run script as below:
 
 ```
-python -u bin/emailjob.py "/etc/emailjob/test_job.ini" "2018-01-01 10:00:00" "2018-01-01 14:00:00"
+python -u bin/email_job.py "/etc/emailjob/test_job.ini" "2018-01-01 10:00:00" "2018-01-01 14:00:00"
 ```
 
 > Parameters:
