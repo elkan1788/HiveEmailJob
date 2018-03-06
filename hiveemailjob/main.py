@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 # __author__ = 'elkan1788@gmail.com'
 
-from emailjob.settings import ProjectConfig
-from ppytools.csv_helper import write
-from ppytools.email_client import EmailClient
-from ppytools.hive_client import HiveClient
-from ppytools.lang.timer_helper import timeMeter
+from hiveemailjob.settings import ProjectConfig
+from ppytools.csvhelper import write
+from ppytools.emailclient import EmailClient
+from ppytools.hiveclient import HiveClient
+from ppytools.lang.timerhelper import timeMeter
 
 import datetime
 import logging
@@ -42,7 +42,10 @@ def run(args):
 
     args_len = len(args)
     if args_len is not 2 and args_len is not 4:
-        print 'Enter args is error. Please check'
+        logger.error('Enter args is error. Please check!!!')
+        logger.error('1: job file path.')
+        logger.error('2: start time, format: 2018-01-30 17:09:38(option)')
+        logger.error('3: stop time(option)')
         sys.exit(1)
     elif args == 4:
         try:
@@ -69,7 +72,6 @@ def run(args):
     logger.info('Stop time: %s', stop_time)
 
     hc = HiveClient(**sets.getHiveConf())
-    ec = EmailClient(**sets.getEmailServer())
 
     csv_file = sets.getCSVFile().items()
     csv_file.sort()
@@ -93,7 +95,7 @@ def run(args):
     index = 0
     for (k, hql) in hql_scripts:
         logging.info('%s: %s', k, hql)
-        result, size = hc.execQuery(hql % (start_rk, stop_rk))
+        result, size = hc.execQuery(hql.format(start_rk, stop_rk))
         if size is 0:
             logging.info('The above HQL script not found any data!!!')
         else:
@@ -103,6 +105,10 @@ def run(args):
 
         index += 1
 
+    '''Flush Hive Server connected.
+    '''
+    hc.closeConn()
+
     email_sub = sets.getEmailInfo()['subject'] % start_time
     email_body = sets.getEmailInfo()['body']
     email_to = sets.getEmailInfo()['to'].split(';')
@@ -111,9 +117,9 @@ def run(args):
     if len(email_atts) == 0:
         email_body = '抱歉当前未找到任何数据。\n\n' + email_body
 
-    ec.send(email_to, email_cc, email_sub, email_body, email_atts, False)
 
-    hc.closeConn()
+    ec = EmailClient(**sets.getEmailServer())
+    ec.send(email_to, email_cc, email_sub, email_body, email_atts, False)
     ec.quit()
 
     logger.info('Finished %s Email Job.', job_info['title'])

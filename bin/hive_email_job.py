@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*-
 # __author__ = 'elkan1788@gmail.com'
 
-from emailjob.main import run
+from hiveemailjob import main
 
 import sys
 
 if __name__ == '__main__':
-    run(sys.argv)
+    main.run(sys.argv)
